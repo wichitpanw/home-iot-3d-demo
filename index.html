@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142224">
+  <title>บ้านของฉัน</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23142224'/%3E%3Cpath d='M7 15 16 7 25 15v10H7Z' fill='none' stroke='%23d5e6b7' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./cameras.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/examples/jsm/"}}</script>
+</head>
+<body data-mode="day">
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z"/><path d="M9 21v-8h6v8"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 13.1A9 9 0 0 1 10.9 3.5a9 9 0 1 0 9.6 9.6Z"/></symbol>
+    <symbol id="i-lamp" viewBox="0 0 24 24"><path d="M8 15c0-2-3-3-3-7a7 7 0 0 1 14 0c0 4-3 5-3 7m-8 2h8m-7 3h6m-5 2h4"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="m4 10 2-6h12l2 6M3 10h18v8H3Zm2 8v3m14-3v3M6 14h2m8 0h2"/></symbol>
+    <symbol id="i-fence" viewBox="0 0 24 24"><path d="M3 21V6l2-3 2 3v15m3 0V6l2-3 2 3v15m3 0V6l2-3 2 3v15M3 10h18M3 17h18"/></symbol>
+    <symbol id="i-orbit" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5Zm-9 5v8l9 5 9-5V8M12 13v8"/></symbol>
+    <symbol id="i-top" viewBox="0 0 24 24"><path d="M4 4h16v16H4ZM4 10h16m-10 0v10"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 2 8M3 3v7h7"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+    <symbol id="i-mouse" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="6"/><path d="M12 2v7"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  </svg>
+  <main id="viewer" aria-label="แบบจำลองบ้านสามมิติ ใช้เมาส์ลากเพื่อหมุน และลูกกลิ้งเพื่อซูม">
+    <div id="loading" role="status"><span class="loading-ring"></span><span>กำลังเตรียมพื้นที่ของคุณ</span></div>
+    <div id="error" role="alert" hidden><strong>เปิดภาพ 3 มิติไม่ได้</strong><p>เบราว์เซอร์นี้ต้องรองรับ WebGL กรุณาลองเปิดด้วย Chrome หรือ Edge ที่เปิดการเร่งกราฟิก</p></div>
+  </main>
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark"><svg><use href="#i-home"/></svg></div><div><h1>บ้านของฉัน<span class="brand-dot">.</span></h1><p>พื้นที่ภายนอก · อุดรธานี</p></div></div>
+    <div class="top-status"><span class="status-dot"></span><span class="status-label">แบบจำลอง 3 มิติ</span><span class="status-divider"></span><span id="mode-status">แสงกลางวัน</span><span class="status-divider hud-divider"></span><button id="toggle-hud" type="button" aria-label="ซ่อน HUD และเมนูทั้งหมด" aria-pressed="false" title="ซ่อนเมนู (H)">ซ่อนเมนู</button></div>
+  </header>
+  <aside class="panel" aria-label="ควบคุมบรรยากาศและมุมมอง">
+    <div class="panel-head"><span class="eyebrow">YOUR SPACE</span><span class="small-dot"></span></div>
+    <h2>บ้านในทุกช่วงเวลา</h2><p class="panel-subtitle">สำรวจพื้นที่ เปลี่ยนแสงในแบบของคุณ</p>
+    <div class="section-label">บรรยากาศ</div>
+    <div class="mode-switch" role="group" aria-label="ช่วงเวลา">
+      <button type="button" data-mode-button="day" class="selected" aria-pressed="true"><svg><use href="#i-sun"/></svg>กลางวัน</button>
+      <button type="button" data-mode-button="night" aria-pressed="false"><svg><use href="#i-moon"/></svg>กลางคืน</button>
+    </div>
+    <div class="section-heading"><span class="section-label">แสงไฟจำลอง</span><span id="light-count">3 / 3 โซน</span></div>
+    <div class="light-list">
+      <div class="light-row"><span class="zone-icon"><svg><use href="#i-home"/></svg></span><div class="zone-name">หน้าบ้าน<small>เฉลียงและทางเดิน</small></div><button type="button" class="toggle" role="switch" aria-checked="true" aria-label="ไฟหน้าบ้าน" data-zone="house"><span></span></button></div>
+      <div class="light-row"><span class="zone-icon"><svg><use href="#i-car"/></svg></span><div class="zone-name">โรงจอดรถ<small>แสงใต้หลังคา</small></div><button type="button" class="toggle" role="switch" aria-checked="true" aria-label="ไฟโรงจอดรถ" data-zone="carport"><span></span></button></div>
+      <div class="light-row"><span class="zone-icon"><svg><use href="#i-fence"/></svg></span><div class="zone-name">รั้วและทางเข้า<small>ไฟหัวเสาหน้าบ้าน</small></div><button type="button" class="toggle" role="switch" aria-checked="true" aria-label="ไฟรั้วและทางเข้า" data-zone="fence"><span></span></button></div>
+    </div>
+    <div class="view-section"><span class="section-label">มุมมอง</span><div class="view-buttons" role="group" aria-label="เลือกมุมมอง"><button type="button" data-view="overview" class="selected" aria-pressed="true"><svg><use href="#i-orbit"/></svg>ภาพรวม</button><button type="button" data-view="front" aria-pressed="false"><svg><use href="#i-home"/></svg>ด้านหน้า</button><button type="button" data-view="top" aria-pressed="false"><svg><use href="#i-top"/></svg>มุมบน</button><button type="button" data-view="left" aria-pressed="false"><svg><use href="#i-home"/></svg>ข้างบ้าน 1</button><button type="button" data-view="right" aria-pressed="false"><svg><use href="#i-home"/></svg>ข้างบ้าน 2</button><button type="button" data-view="rear" aria-pressed="false"><svg><use href="#i-top"/></svg>หลังบ้าน</button></div><p class="view-note">1 = ซ้าย · 2 = ขวา เมื่อมองเข้าบ้าน</p></div>
+    <button type="button" id="reset-view" class="reset-button"><svg><use href="#i-reset"/></svg>กลับมุมเริ่มต้น<span>↗</span></button>
+    <p class="simulation-note"><span></span>ไฟในภาพเป็นการจำลอง</p>
+  </aside>
+  <section class="scene-caption" aria-label="รายละเอียดพื้นที่"><span class="eyebrow">HOME / 01</span><h2>พื้นที่คุ้นเคย<br><span>ในมุมมองใหม่</span></h2><p>บ้านชั้นเดียว · สวน · โรงจอดรถ</p><div class="caption-line"></div><span class="approximation">อ้างอิงภาพจริง · สัดส่วนโดยประมาณ</span></section>
+  <div class="map-orientation" aria-hidden="true"><span>หน้าบ้าน</span><div><svg><use href="#i-arrow"/></svg></div><small>ถนน</small></div>
+  <footer class="bottom-bar"><div class="interaction-hint"><svg><use href="#i-mouse"/></svg><span>ลากเพื่อหมุน</span><i></i><span>เลื่อนเพื่อซูม</span><i></i><span>คลิกขวาลากเพื่อเลื่อน</span></div><div class="mobile-hint">ลากเพื่อหมุน · ใช้สองนิ้วซูมและเลื่อน</div><div class="zoom-controls" role="group" aria-label="ซูมมุมมอง"><button type="button" id="zoom-out" aria-label="ซูมออก"><svg><use href="#i-minus"/></svg></button><span id="zoom-value">1.0×</span><button type="button" id="zoom-in" aria-label="ซูมเข้า"><svg><use href="#i-plus"/></svg></button></div></footer>
+  <div class="live-status" id="live-status" role="status" aria-live="polite"></div>
+  <button class="lab-open" id="open-cameras" type="button" aria-label="ดูภาพตัวอย่างจากกล้อง" title="ดูภาพ Snapshot ตัวอย่าง"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3l4-3v14l-4-3h-3"/><rect x="3" y="6" width="11" height="12" rx="3"/><circle cx="8.5" cy="12" r="2.5"/></svg><span class="camera-launcher-label">กล้องของบ้าน</span><span id="camera-event-badge" class="camera-event-badge" hidden>0</span></button>
+  
+  <aside class="lab-panel" id="camera-panel" aria-label="กล้องของบ้านและตำแหน่งหมุด" hidden>
+    <div class="lab-head"><h2>กล้องของบ้าน</h2><button id="close-cameras" type="button" aria-label="ปิดแผงกล้อง">ปิด</button></div>
+    <p>กล้องจำลองทั้ง 6 จุด คลิกเพื่อดูภาพ Snapshot ประกอบผลงาน</p>
+    <div class="lab-status" id="camera-status" role="status" aria-live="polite">เวอร์ชัน Portfolio ไม่เชื่อมต่อกล้องจริง</div>
+    <p class="lab-note">ภาพทั้งหมดเป็น Snapshot สำหรับสาธิต สามารถเปิดพร้อมกันและหมุนดูโมเดลต่อได้</p>
+    <div id="camera-list"></div>
+  </aside>
+  <div id="pin-message" class="pin-message" role="status" hidden></div>
+  <div id="camera-live-layer"></div>
+  <template id="camera-live-template"><section class="lab-live" aria-label="ภาพสดกล้อง">
+    <div class="lab-head"><h2 data-live-name>ภาพสด</h2><button data-live-close type="button">ปิด</button></div>
+    <div class="live-stream-controls" data-live-streams aria-label="คุณภาพภาพสด"><button type="button" data-stream="sub" aria-pressed="true">Sub</button><button type="button" data-stream="main" aria-pressed="false">Main</button></div>
+    <img data-live-image alt="ภาพสดจากกล้องที่เลือก">
+    <p data-live-status role="status">กำลังรอภาพ</p>
+    <div class="lab-ptz" data-live-ptz>
+      <div class="ptz-directions" role="group" aria-label="หมุนกล้อง กดค้างเพื่อหมุน ปล่อยเพื่อหยุด">
+        <button type="button" data-ptz="up" aria-label="หมุนขึ้น" disabled>↑</button>
+        <button type="button" data-ptz="left" aria-label="หมุนซ้าย" disabled>←</button>
+        <button type="button" data-ptz="stop" aria-label="หยุดหมุน" disabled>■</button>
+        <button type="button" data-ptz="right" aria-label="หมุนขวา" disabled>→</button>
+        <button type="button" data-ptz="down" aria-label="หมุนลง" disabled>↓</button>
+      </div>
+      <div class="ptz-settings">
+        <div class="ptz-zoom"><button type="button" data-ptz="zoom_in" aria-label="ซูมกล้องเข้า" disabled>ซูม +</button><button type="button" data-ptz="zoom_out" aria-label="ซูมกล้องออก" disabled>ซูม −</button></div>
+        <label>ความเร็ว <select data-ptz-speed><option value="5">ช้า</option><option value="15" selected>ปานกลาง</option><option value="30">เร็ว</option></select></label>
+        <p data-ptz-status role="status">กดค้างเพื่อหมุน · ปล่อยเพื่อหยุด</p>
+      </div>
+    </div>
+  </section></template>
+  <script type="module" src="./src/hud.js"></script>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
